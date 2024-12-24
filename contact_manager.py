@@ -99,6 +99,8 @@ class ContactManager:
                     phone = importing[contact][2]
                     email = importing[contact][3]
                     self.create_contact(name, phone, email)
+        else:
+           print(f'Файл {import_file_name}.csv не существует')
 
     def export_csv_contacts(self, export_file_name):
         df = pd.DataFrame(self.contacts)

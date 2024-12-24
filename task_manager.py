@@ -123,6 +123,8 @@ class TaskManager:
                     priority = importing[task][4]
                     due_date = importing[task][5]
                     self.create_task(title, description, done, priority, due_date)
+        else:
+           print(f'Файл {import_file_name}.csv не существует')
 
     def export_csv_tasks(self, export_file_name):
         df = pd.DataFrame(self.tasks)

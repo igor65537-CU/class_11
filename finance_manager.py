@@ -107,6 +107,8 @@ class FinanceManager:
                     date = importing[record][3]
                     description = importing[record][4]
                     self.create_record(amount, category, date, description)
+        else:
+           print(f'Файл {import_file_name}.csv не существует')
 
     def export_csv_records(self, export_file_name):
         df = pd.DataFrame(self.records)

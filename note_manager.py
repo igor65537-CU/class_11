@@ -96,6 +96,8 @@ class NoteManager:
             if importing[note][0] != 'id':
                 imported_note_id = self.create_note(importing[note][1], importing[note][2])
                 self.set_timestamp(imported_note_id, importing[note][3])
+    else:
+           print(f'Файл {import_file_name}.csv не существует')
 
   def export_csv_notes(self, export_file_name):
     df = pd.DataFrame(self.notes)
