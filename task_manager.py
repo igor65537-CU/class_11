@@ -7,18 +7,37 @@ class TaskManager:
         self.local_file = local_file
         self.tasks = self.load_local_tasks()
 
+    def check_data(self, data):
+      for task in data:
+        if data[task]['id'] is not int:
+          try:
+            data[task]['id'] = int(data[task]['id'])
+          except:
+                print('Ошибка в данных')
+                return 'bad'
+      return 'good'
+
     def load_local_tasks(self):
         if os.path.exists(self.local_file):
             with open(self.local_file, 'r', encoding='utf-8') as file:
-                return json.load(file)
+                local_data = json.load(file)
+            if self.check_data(local_data) == 'good':
+               return local_data
         return {}
     
     def save_local_tasks(self):
         with open(self.local_file, 'w', encoding='utf-8') as file:
             json.dump(self.tasks, file, indent=4, ensure_ascii=False)
 
+    def create_unic_id(self):
+      max_id = 0
+      for task in self.tasks:
+        if self.tasks[task]['id'] > max_id:
+          max_id = self.tasks[task]['id']
+      return max_id + 1
+
     def create_task(self, title, description, done=False, priority='', due_date=''):
-        task_id = f'task_{len(self.tasks) + 1}'
+        task_id = self.create_unic_id()
         task = {
             'id': task_id,
             'title': title,
@@ -27,7 +46,7 @@ class TaskManager:
             'priority': priority,
             'due_date': due_date,
         }
-        self.tasks[task_id] = task
+        self.tasks[f'task_{task_id}'] = task
         self.save_local_tasks()
         return task_id
     
@@ -53,7 +72,7 @@ class TaskManager:
         if len(tasks) > 0:
             print('Все задачи:')
             for task in tasks:
-                message = f'Заголовок: {tasks[task]['title']}'
+                message = f'id: {tasks[task]['id']}, заголовок: {tasks[task]['title']}'
                 if self.tasks[task]['priority'] != '':
                    message += f', приоритет: {tasks[task]['priority']}'
                 if self.tasks[task]['due_date'] != '':
@@ -67,18 +86,21 @@ class TaskManager:
             for task in self.tasks:
                if self.tasks[task]['id'] == task_id:
                   self.tasks[task]['done'] = True
+                  self.save_local_tasks()
 
     def set_priority(self, task_id, priority):
        if len(self.tasks) > 0:
             for task in self.tasks:
                if self.tasks[task]['id'] == task_id:
                   self.tasks[task]['priority'] = priority
+                  self.save_local_tasks()
        
     def set_due_date(self, task_id, due_date):
        if len(self.tasks) > 0:
             for task in self.tasks:
                if self.tasks[task]['id'] == task_id:
                   self.tasks[task]['due_date'] = due_date
+                  self.save_local_tasks()
 
     def change_task(self, task_id, new_title, new_description, is_done, new_priority, due_date):
         if len(self.tasks) > 0:
@@ -92,6 +114,7 @@ class TaskManager:
                        print('СДЕЛАНО: ПОЛЕ БЫЛО ЗАПОЛНЕНО НЕВЕРОНО, ЗНАЧЕНИЕ НЕ ИЗМЕНЕНО')
                     self.tasks[task]['priority'] = new_priority
                     self.tasks[task]['due_date'] = due_date
+                    self.save_local_tasks()
                     print('Задача изменена')
                     return self.tasks[task]
             print('Задача не найдена')
@@ -102,16 +125,18 @@ class TaskManager:
     def delete_task(self, task_id):
         if len(self.tasks) > 0:
             for task in self.tasks:
+                #print(self.tasks[task]['id'])
                 if self.tasks[task]['id'] == task_id:
-                    self.tasks.remove(task)
-                    print('Заметка удалена')
-                    return self.tasks[task]
-            print('Заметка не найдена')
+                    del self.tasks[task]
+                    self.save_local_tasks()
+                    print('Задача удалена')
+                    return 'ok'
+            print('Задача не найдена')
             return 'not_finded'
         else:
             print('Заметки отсутствуют')
 
-    def import_csv_tasks(self, import_file_name):
+    def import_csv_tasks(self, import_file_name='tasks_for_import'):
         if os.path.exists(f'{import_file_name}.csv'):
             with open(f'{import_file_name}.csv', 'r', encoding='utf-8') as import_file:
                 importing = pd.read_csv(import_file)
@@ -126,7 +151,7 @@ class TaskManager:
         else:
            print(f'Файл {import_file_name}.csv не существует')
 
-    def export_csv_tasks(self, export_file_name):
+    def export_csv_tasks(self, export_file_name='tasks_for_export'):
         df = pd.DataFrame(self.tasks)
         df.to_csv(f'{export_file_name}.csv', encoding='utf-8')
 
@@ -159,26 +184,48 @@ def start_task_manager():
       done = input("Сделано: 'True' или 'False'")
       priority = input("Приоритет: 'Высокий', 'Средний', 'Низкий'")
       due_date = input("Срок выполнения: 'ДД-ММ-ГГГГ'")
-      manager.change_task(task_id, title, description, done, priority, due_date)
+      try:
+        task_id = int(task_id)
+        manager.change_task(task_id, title, description, done, priority, due_date)
+      except:
+         print('Недопустимый id')
       return True
     elif user_input == '5':
       task_id = input('Введите id выполненой задачи: ')
-      manager.set_task_done(task_id)
+      try:
+        task_id = int(task_id)
+        manager.set_task_done(task_id)
+      except:
+         print('Недопустимый id')
       return True
     elif user_input == '6':
       task_id = input('Введите id задачи: ')
       priority = input('Новый приоритет: ')
-      manager.set_priority(task_id, priority)
+      try:
+        task_id = int(task_id)
+        manager.set_priority(task_id, priority)
+      except:
+         print('Недопустимый id')
       return True
     elif user_input == '7':
       task_id = input('Введите id задачи: ')
       due_date = input("Новый срок выполнения ('ДД-ММ-ГГГГ'): ")
-      manager.set_due_date(task_id, due_date)
+      try:
+        task_id = int(task_id)
+        manager.set_due_date(task_id, due_date)
+      except:
+         print('Недопустимый id')
       return True
+    
     elif user_input == '8':
       task_id = input('Введите id задачи: ')
-      manager.delete_task(task_id)
+      try:
+        print(int(task_id))
+      except:
+        print('Недопустимый id')
+      manager.delete_task(int(task_id))
       return True
+    
     elif user_input == '9':
       import_file = input('Введите файл для импорта: ')
       manager.import_csv_tasks(import_file)

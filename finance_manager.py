@@ -7,18 +7,37 @@ class FinanceManager:
         self.local_file = local_file
         self.records = self.load_local_records()
 
+    def check_data(self, data):
+      for record in data:
+        if data[record]['id'] is not int:
+          try:
+            data[record]['id'] = int(data[record]['id'])
+          except:
+                print('Ошибка в данных')
+                return 'bad'
+      return 'good'
+
     def load_local_records(self):
         if os.path.exists(self.local_file):
             with open(self.local_file, 'r', encoding='utf-8') as file:
-                return json.load(file)
+                local_data = json.load(file)
+            if self.check_data(local_data) == 'good':
+               return local_data
         return {}
     
     def save_local_records(self):
         with open(self.local_file, 'w', encoding='utf-8') as file:
             json.dump(self.records, file, indent=4, ensure_ascii=False)
 
+    def create_unic_id(self):
+      max_id = 0
+      for note in self.notes:
+        if self.notes[note]['id'] > max_id:
+          max_id = self.notes[note]['id']
+      return max_id + 1
+
     def create_record(self, amount, category='', date='', description=''):
-        record_id = f'record_{len(self.records) + 1}'
+        record_id = self.create_unic_id()
         contact = {
             'id': record_id,
             'amount': amount,
@@ -26,7 +45,7 @@ class FinanceManager:
             'date': date,
             'description': description,
         }
-        self.records[record_id] = contact
+        self.records[f'record_{record_id}'] = contact
         self.save_local_records()
         return record_id
 
@@ -96,7 +115,7 @@ class FinanceManager:
           if self.records[record]['category'] == category:
              self.show_record(record)
 
-    def import_csv_records(self, import_file_name):
+    def import_csv_records(self, import_file_name='records_for_import'):
         if os.path.exists(f'{import_file_name}.csv'):
             with open(f'{import_file_name}.csv', 'r', encoding='utf-8') as import_file:
                 importing = pd.read_csv(import_file)
@@ -110,7 +129,7 @@ class FinanceManager:
         else:
            print(f'Файл {import_file_name}.csv не существует')
 
-    def export_csv_records(self, export_file_name):
+    def export_csv_records(self, export_file_name='records_for_export'):
         df = pd.DataFrame(self.records)
         df.to_csv(f'{export_file_name}.csv', encoding='utf-8')
 

@@ -7,10 +7,22 @@ class NoteManager:
     self.local_file = local_file
     self.notes = self.load_local_notes()
 
+  def check_data(self, data):
+      for note in data:
+        if data[note]['id'] is not int:
+          try:
+            data[note]['id'] = int(data[note]['id'])
+          except:
+                print('Ошибка в данных')
+                return 'bad'
+      return 'good'
+
   def load_local_notes(self):
     if os.path.exists(self.local_file):
       with open(self.local_file, 'r', encoding='utf-8') as file:
-        return json.load(file)
+        local_data = json.load(file)
+      if self.check_data(local_data) == 'good':
+        return local_data
     return {}
 
   def save_local_note(self):
@@ -28,15 +40,22 @@ class NoteManager:
           return 'ok'
     return 'not_finded'
   
+  def create_unic_id(self):
+    max_id = 0
+    for note in self.notes:
+      if self.notes[note]['id'] > max_id:
+        max_id = self.notes[note]['id']
+    return max_id + 1
+  
   def create_note(self, title, content):
-    note_id = f'note_{len(self.notes) + 1}'
+    note_id = self.create_unic_id()
     note = {
         'id': note_id,
         'title': title,
         'content': content,
         'timestamp': self.get_timestamp(),
     }
-    self.notes[note_id] = note
+    self.notes[f'note_{note_id}'] = note
     self.save_local_note()
     return note_id
 
@@ -69,6 +88,7 @@ class NoteManager:
           self.notes[note]['title'] = new_title
           self.notes[note]['content'] = new_content
           self.notes[note]['timestamp'] = self.get_timestamp()
+          self.save_local_note()
           print('Заметка изменена')
           return self.notes[note]
       print('Заметка не найдена')
@@ -80,15 +100,16 @@ class NoteManager:
     if len(self.notes) > 0:
       for note in self.notes:
         if self.notes[note]['id'] == note_id:
-          self.notes.remove(note)
+          del self.notes[note]
+          self.save_local_note()
           print('Заметка удалена')
-          return self.notes[note]
+          return 'ok'
       print('Заметка не найдена')
       return 'not_finded'
     else:
       print('Заметки отсутствуют')
 
-  def import_csv_notes(self, import_file_name):
+  def import_csv_notes(self, import_file_name='notes_for_import'):
     if os.path.exists(f'{import_file_name}.csv'):
       with open(f'{import_file_name}.csv', 'r', encoding='utf-8') as import_file:
         importing = pd.read_csv(import_file)
@@ -99,7 +120,7 @@ class NoteManager:
     else:
            print(f'Файл {import_file_name}.csv не существует')
 
-  def export_csv_notes(self, export_file_name):
+  def export_csv_notes(self, export_file_name='notes_for_export'):
     df = pd.DataFrame(self.notes)
     df.to_csv(f'{export_file_name}.csv', encoding='utf-8')
 
@@ -118,17 +139,29 @@ def start_note_manager():
       return True
     elif user_input == '3':
       note_id = input('Введите id для подробностей: ')
-      manager.return_note_by_id(note_id)
+      try:
+        note_id = int(note_id)
+        manager.return_note_by_id(note_id)
+      except:
+        print('Недопустимый id')
       return True
     elif user_input == '4':
       note_id = input('Введите id для подробностей: ')
       title = input('Введите новый заголовок')
       content = input('Введите новое наполнение')
-      manager.change_note(note_id, title, content)
+      try:
+        note_id = int(note_id)
+        manager.change_note(note_id, title, content)
+      except:
+        print('Недопустимый id')
       return True
     elif user_input == '5':
       note_id = input('Введите id для удаления: ')
-      manager.delete_note(note_id)
+      try:
+        note_id = int(note_id)
+        manager.delete_note(note_id)
+      except:
+        print('Недопустимый id')
       return True
     elif user_input == '6':
       import_file_name = input('Путь до файла импорта: ')
