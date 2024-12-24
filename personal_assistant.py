@@ -1,5 +1,8 @@
 from note_manager import *
 from task_manager import *
+from contact_manager import *
+from finance_manager import *
+from calculator import *
 
 def start():
     print('''Добро пожаловать в Персональный помощник!
@@ -23,10 +26,13 @@ def input_processing(user_input):
         start_task_manager()
         return True
     elif user_input == '3':
+        start_contact_manager()
         return True
     elif user_input == '4':
+        start_finance_manager()
         return True
     elif user_input == '5':
+        start_calculator()
         return True
     elif user_input == '6':
         return False
