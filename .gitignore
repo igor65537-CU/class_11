@@ -1,0 +1,10 @@
+__pycache__
+Include
+Lib
+Scripts
+pyvenv.cfg
+notes.json
+tasks.json
+contacts.json
+finance.json
+calc_reg_exp_not_working.py
