@@ -1,18 +1,30 @@
 def calc_sum(a, b):
-    return float(a) + float(b)
+    try:
+        return float(a) + float(b)
+    except:
+        print('Нужно вводить числа')
 
 def calc_dif(a, b):
-    return float(a) - float(b)
+    try:
+        return float(a) - float(b)
+    except:
+        print('Нужно вводить числа')
 
 def calc_mul(a, b):
-    return float(a) * float(b)
+    try:
+        return float(a) * float(b)
+    except:
+        print('Нужно вводить числа')
 
 def calc_div(a, b):
-    if float(b) == 0:
-        print('Деление на 0')
-        return 'Error'
-    else:
-        return float(a) / float(b)
+    try:
+        if float(b) == 0:
+            print('Деление на 0')
+            return 'Error'
+        else:
+            return float(a) / float(b)
+    except:
+        print('Нужно вводить числа')
 
 def start_calculator():
     print('''Выберите действие:
