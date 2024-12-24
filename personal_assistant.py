@@ -1,4 +1,5 @@
 from note_manager import *
+from task_manager import *
 
 def start():
     print('''Добро пожаловать в Персональный помощник!
@@ -19,6 +20,7 @@ def input_processing(user_input):
         start_note_manager()
         return True
     elif user_input == '2':
+        start_task_manager()
         return True
     elif user_input == '3':
         return True
