@@ -189,8 +189,15 @@ def start_task_manager():
       return True
     elif user_input == '11':
       return False
+  
+  working = True
+  while working:
+    print_menu()
+    user_input = input('Действие: ')
+    working = user_input_processing(user_input)
 
-  print('''Выберите действие:
+def print_menu():
+   print('''Выберите действие:
 1. Создать новую задачу
 2. Показать список задач
 3. Отфильтровать по статусу, приоритету, сроку выполнения
@@ -202,11 +209,6 @@ def start_task_manager():
 9. Импорт задач
 10. Экспорт задач
 11. Вернуться''')
-  
-  working = True
-  while working:
-    user_input = input('Действие: ')
-    working = user_input_processing(user_input)
 
 if __name__ == '__main__':
   start_task_manager()

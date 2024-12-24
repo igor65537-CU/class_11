@@ -152,8 +152,15 @@ def start_finance_manager():
       return True
     elif user_input == '8':
       return False
+  
+  working = True
+  while working:
+    print_menu()
+    user_input = input('Действие: ')
+    working = user_input_processing(user_input)
 
-  print('''Выберите действие:
+def print_menu():
+   print('''Выберите действие:
 1. Создать новую финансовую запись
 2. Показать список финансовых записей
 3. Сгенирировать отчет
@@ -162,11 +169,6 @@ def start_finance_manager():
 6. Импорт финансовых записей
 7. Экспорт финансовых записей
 8. Вернуться''')
-  
-  working = True
-  while working:
-    user_input = input('Действие: ')
-    working = user_input_processing(user_input)
 
 if __name__ == '__main__':
   start_finance_manager()

@@ -4,7 +4,7 @@ from contact_manager import *
 from finance_manager import *
 from calculator import *
 
-def start():
+def print_menu():
     print('''Добро пожаловать в Персональный помощник!
 Выберите действие:
 1. Управление заметками
@@ -13,8 +13,11 @@ def start():
 4. Управление финансовыми записями
 5. Калькулятор
 6. Выход''')
+
+def start():
     working = True
     while working:
+        print_menu()
         user_input = input('Действие: ')
         working = input_processing(user_input)
 

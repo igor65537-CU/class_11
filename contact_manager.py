@@ -145,8 +145,15 @@ def start_contact_manager():
       return True
     elif user_input == '8':
       return False
+  
+  working = True
+  while working:
+    print_menu()
+    user_input = input('Действие: ')
+    working = user_input_processing(user_input)
 
-  print('''Выберите действие:
+def print_menu():
+   print('''Выберите действие:
 1. Создать новый контакт
 2. Показать список контактов
 3. Поиск по имени или телефону
@@ -155,11 +162,6 @@ def start_contact_manager():
 6. Импорт контактов
 7. Экспорт контактов
 8. Вернуться''')
-  
-  working = True
-  while working:
-    user_input = input('Действие: ')
-    working = user_input_processing(user_input)
 
 if __name__ == '__main__':
   start_contact_manager()

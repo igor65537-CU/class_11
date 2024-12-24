@@ -140,7 +140,14 @@ def start_note_manager():
       return True
     elif user_input == '8':
       return False
+    
+  working = True
+  while working:
+    print_menu()
+    user_input = input('Действие: ')
+    working = user_input_processing(user_input)
 
+def print_menu():
   print('''Выберите действие:
 1. Создать новую заметку
 2. Показать список заметок
@@ -150,10 +157,6 @@ def start_note_manager():
 6. Импорт заметок
 7. Экспорт заметок
 8. Вернуться''')
-  working = True
-  while working:
-    user_input = input('Действие: ')
-    working = user_input_processing(user_input)
 
 if __name__ == '__main__':
   start_note_manager()
