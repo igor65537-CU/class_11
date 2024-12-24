@@ -133,9 +133,11 @@ def start_task_manager():
     manager = TaskManager()
     if user_input == '1':
       print('Создание новой задачи')
-      title = input('Введите заголовок: ')
-      description = input('Введите описание: ')
-      task_id = manager.create_task(title, description)
+      title = input('Введите название задачи: ')
+      description = input('Введите описание задачи: ')
+      priority = input('Выберите приоритет (Высокий/Средний/Низкий): ')
+      due_date = input('Введите срок выполнения (в формате ДД-ММ-ГГГГ): ')
+      task_id = manager.create_task(title, description, priority=priority, due_date=due_date)
       print(f'Сознана задача с id: {task_id}')
       return True
     elif user_input == '2':
